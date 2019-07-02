@@ -17,7 +17,7 @@ import pandas as pd
 import time
 import datetime
 from pprint import pprint
-
+import time
 
 
 #define  function for exec path for chromedriver.exe. 
@@ -61,7 +61,7 @@ def mars_scrape():
   # Use the parent element to find the paragraph text
   news_p = slide_elem.find('div', class_="article_teaser_body").get_text()
   # news_p
-  mars_info_dict["Mars_facts_table"] = news_title
+  mars_info_dict["Mars_news_title"] = news_title
   mars_info_dict["Mars_news_body"] = news_p
 
 
@@ -74,13 +74,16 @@ def mars_scrape():
 
   url2 = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
   browser.visit(url2)
+  time.sleep(3)
 
   full_img_elem = browser.find_by_id('full_image')
   full_img_elem.click()
+  time.sleep(3)
 
   # try except stuff
   more_info_elem = browser.find_link_by_partial_text('more info')
   more_info_elem.click()
+  time.sleep(3)
 
 
   # ### Soup Object
@@ -130,7 +133,9 @@ def mars_scrape():
   # ## Mars Facts
   url4 = "https://space-facts.com/mars/"
 
-  df = pd.read_html(url)[0]
+  df = pd.read_html(url4)[0]
+
+  time.sleep(1)
 
   df.columns=['description', 'value']
   df.set_index('description', inplace=True)
@@ -149,19 +154,23 @@ def mars_scrape():
 # ## Mars Hemisphere
   url5 = "https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars"
   browser.visit(url5)
+  time.sleep(3)
 
   hemisphere_image_urls = []
 
   # First, get a list of all of the hemispheres
   links = browser.find_by_css("a.product-item h3")
+  print("Printing links")
   print(links)
 
   # Next, loop through those links, click the link, find the sample anchor, return the href
   for i in range(len(links)):
       hemisphere = {}
+      print("i =" + str(i))
 
      # We have to find the elements on each loop to avoid a stale element exception
       browser.find_by_css("a.product-item h3")[i].click()
+      time.sleep(3)
 
      # Next, we find the Sample image anchor tag and extract the href
       sample_elem = browser.find_link_by_text('Sample').first
@@ -175,7 +184,7 @@ def mars_scrape():
      # Append hemisphere object to list
       hemisphere_image_urls.append(hemisphere)
       
-      #browser.back()
+      browser.back()
 
 
 
@@ -188,9 +197,14 @@ def mars_scrape():
       "Featured_Image" : mars_info_dict["Mars_featured_image_url"],
       "Weather_Tweet" : mars_info_dict["Mars_tweet_weather"],
       "Facts" : mars_info_dict["Mars_facts_table"],
-      "Hemisphere_Image_urls": hemisphere,
-      "Date" : mars_info_dict["Date_time"],
+      "Hemisphere_Image_urls": hemisphere_image_urls,
+      #"Date" : mars_info_dict["Date_time"],
     }
-
+  print(mars_return_dict)
   return mars_return_dict
+
+
+# output_dict = mars_scrape()
+# print("Printing output..")
+# print(output_dict)
 

@@ -25,7 +25,8 @@ def scrape():
 	mars_mission_data = mars_scrape()
 	collection.update({"id": 1}, {"$set": mars_mission_data}, upsert = True)
 
-	return redirect("http://localhost:5000/", code=302)
+	#return redirect("http://localhost:5000/", code=302)
+	return("Task complete")
 
 if __name__ == "__main__":
 	app.run(debug=True)
